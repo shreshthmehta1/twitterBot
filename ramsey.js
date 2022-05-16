@@ -2,6 +2,7 @@ var Twitter = require('twitter');
 let config = require('./config.js');
 var cron = require('node-cron');
 const Quotes = require("randomquote-api");
+fs = require('fs');
 
 //Schedule task
 cron.schedule('*/180 * * * *', () => {
@@ -9,9 +10,9 @@ cron.schedule('*/180 * * * *', () => {
 //Retrieved set of tweets
 var twid = [];
 // var tweetset = [];
-let runs = 5;
+let runs = 10;
 let queriesRT = ['Dr. arun kumar mehta', 'Chief secretary J&K', 'IASOWA J&K'];
-let queriesLK = ['Silicon labs','wifi halow', 'Arsenal for top 4', 'wildlife travel india', 'fractalai'];
+let queriesLK = ['Silicon labs','wifi halow', 'fractalai', 'Arsenal for top 4', 'wildlife travel india', 'randy orton', 'mo elneny', 'rob holding'];
 let channel;
 
 var client = new Twitter({
@@ -28,10 +29,14 @@ var client = new Twitter({
    
    client.post('statuses/update', {status: randomquote.quote}, function(error, tweet, response) {
        if (!error) {
-        //  console.log(tweet);
+          console.log(response);
        } 
        else {
-           console.log(error, "no");
+           console.log(error);
+          //  fs.appendFile('err.txt', 'blah', function (err) {
+          //   if (err) return console.log(err);
+          //   console.log('done did it all');
+          // });
        }
    });
   }
@@ -47,6 +52,7 @@ var client = new Twitter({
        for(let i=0;i<runs;i++){
     if (typeof tweets !== "undefined" && typeof tweets.statuses[i] !== "undefined"){
     // tweetset.push(tweets.statuses[i].id_str);
+    // console.log(tweets)
     twid.push(tweets.statuses[i].id);
     var tweetId = tweets.statuses[i].id_str;
   }
@@ -54,8 +60,11 @@ var client = new Twitter({
   //Like
 client.post('favorites/create', { id: tweetId })
     .then(result => {
-    console.log('Liked tweet successfully!');
-}).catch(console.error);
+    console.log(result, 'lk');
+}).catch(console.error, 'lk err', fs.appendFile('lk.txt', '\n'+JSON.stringify(error), function (err) {
+  if (err) return console.log(err);
+  console.log('done did it all lk');
+}));
  }
 //  console.log(twid, 'full list of array accessible here');
 });
@@ -79,8 +88,16 @@ function retweet (queries) {
 // Retweet
 client.post('statuses/retweet/' + tweetId, function(error, tweet, response) {
   if (!error) {
-    console.log('retweeted successfully');
-  }});
+    console.log(response, 'rt');
+  }
+else{
+  console.log(error, 'rt err');
+  //log
+  fs.appendFile('rt.txt', '\n'+JSON.stringify(error), function (err) {
+    if (err) return console.log(err);
+    console.log('done did it all rk');
+  });
+}});
  }
   //  console.log(twid, 'full list of array accessible here');
   });
