@@ -10,9 +10,9 @@ cron.schedule('*/180 * * * *', () => {
 //Retrieved set of tweets
 var twid = [];
 // var tweetset = [];
-let runs = 10;
+let runs = 1;
 let queriesRT = ['Dr. arun kumar mehta', 'Chief secretary J&K', 'IASOWA J&K'];
-let queriesLK = ['Silicon labs','wifi halow', 'fractalai', 'Arsenal for top 4', 'wildlife travel india', 'randy orton', 'mo elneny', 'rob holding'];
+let queriesLK = ['Silicon labs','wifi halow', 'fractalai', 'wildlife travel india'];
 let channel;
 
 var client = new Twitter({
@@ -58,13 +58,17 @@ var client = new Twitter({
   }
   
   //Like
-client.post('favorites/create', { id: tweetId })
-    .then(result => {
-    console.log(result, 'lk');
-}).catch(console.error, 'lk err', fs.appendFile('lk.txt', '\n'+JSON.stringify(error), function (err) {
-  if (err) return console.log(err);
-  console.log('done did it all lk');
-}));
+client.post('favorites/create', { id: tweetId }, function (error, tweet, response){
+ if(!error){
+  console.log(response, 'LK');
+ }
+  else {
+    console.log(error, 'LK err');
+    fs.appendFile('lk.txt', '\n'+JSON.stringify(error), function (err) {
+      if (err) return console.log(err);
+    });
+   }
+})
  }
 //  console.log(twid, 'full list of array accessible here');
 });
@@ -88,14 +92,13 @@ function retweet (queries) {
 // Retweet
 client.post('statuses/retweet/' + tweetId, function(error, tweet, response) {
   if (!error) {
-    console.log(response, 'rt');
+    console.log(response, 'RT');
   }
 else{
-  console.log(error, 'rt err');
+  console.log(error, 'RT err');
   //log
   fs.appendFile('rt.txt', '\n'+JSON.stringify(error), function (err) {
     if (err) return console.log(err);
-    console.log('done did it all rk');
   });
 }});
  }
