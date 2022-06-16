@@ -36,10 +36,11 @@ df = pd.DataFrame(data, columns=columns)
 
 df.to_csv('tweets.csv')
 
+# upload -> s3 
 s3 = boto3.resource('s3')
 for bucket in s3.buckets.all():
     print(bucket.name)
 
 bucket = s3.Bucket('myawsbucketweet')
-s3.Object('myawsbucketweet', 'tweetsN.csv').put(Body=open(r'C:\Users\Shreshth Mehta\Documents\code\tweets.csv','rb'))
+s3.Object('myawsbucketweet', 'tweetsO.csv').put(Body=open(r'tweets.csv','rb'))
 
