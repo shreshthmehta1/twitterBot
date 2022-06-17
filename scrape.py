@@ -13,11 +13,6 @@ api_key_secret = config['twitter']['TWITTER_CONSUMER_SECRET']
 access_token = config['twitter']['TWITTER_ACCESS_TOKEN_KEY']
 access_token_secret = config['twitter']['ACCESS_TOKEN_SECRET']
 
-# print(api_key)
-# print(api_key_secret)
-# print(access_token)
-# print(access_token_secret)
-
 # authenticate
 auth = tweepy.OAuthHandler(api_key, api_key_secret)
 auth.set_access_token(access_token, access_token_secret)
@@ -38,8 +33,9 @@ df.to_csv('tweets.csv')
 
 # upload -> s3 
 s3 = boto3.resource('s3')
-for bucket in s3.buckets.all():
-    print(bucket.name)
+
+# for bucket in s3.buckets.all():
+#     print(bucket.name)
 
 bucket = s3.Bucket('myawsbucketweet')
 s3.Object('myawsbucketweet', 'tweetsO.csv').put(Body=open(r'tweets.csv','rb'))
