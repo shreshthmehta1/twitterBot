@@ -6,7 +6,7 @@ const Quotes = require("randomquote-api");
 let fs = require('fs');
 
 //Schedule task
-cron.schedule('*/180 * * * *', () => {
+cron.schedule('* */1 * * *', () => {
 
 let tweetset = [];
 //Retrieved set of tweets
@@ -31,7 +31,7 @@ async function post () {
 const openai = new OpenAIApi(configuration);
 const completion = await openai.createCompletion({
   model: "text-davinci-002",
-  prompt:"tweet about Kashmir",
+  prompt:"tweet about ",
   temperature: 0.29,
   max_tokens: 64,
   top_p: 1,
@@ -122,7 +122,7 @@ else{
  });
 }
 
-//post();
+post();
 like(config.queriesLK);
 retweet(config.queriesRT);
 
