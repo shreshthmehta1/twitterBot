@@ -1,42 +1,57 @@
+const { Configuration, OpenAIApi } = require("openai");
 var Twitter = require('twitter');
 let config = require('./config.js');
 var cron = require('node-cron');
 const Quotes = require("randomquote-api");
-fs = require('fs');
+let fs = require('fs');
 
 //Schedule task
 cron.schedule('*/180 * * * *', () => {
 
+let tweetset = [];
 //Retrieved set of tweets
 var twid = [];
-// var tweetset = [];
-let runs = 1;
-let queriesRT = ['Dr. arun kumar mehta', 'Chief secretary J&K', 'IASOWA J&K'];
-let queriesLK = ['Silicon labs','wifi halow', 'fractalai', 'wildlife travel india'];
+let runs = 10;
 let channel;
 
 var client = new Twitter({
     consumer_key: process.env.TWITTER_CONSUMER_KEY,
     consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
-    //bearer_token: process.env.TWITTER_BEARER_TOKEN,
     access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY,
     access_token_secret: process.env.ACCESS_TOKEN_SECRET
+    //bearer_token: process.env.TWITTER_BEARER_TOKEN,
   });
 
-  function post () {
-    let randomquote = Quotes.randomQuote();
-  console.log(randomquote.quote);
-   
-   client.post('statuses/update', {status: randomquote.quote}, function(error, tweet, response) {
-       if (!error) {
-          console.log(response);
-       } 
-       else {
-           console.log(error);
-          //  fs.appendFile('err.txt', 'blah', function (err) {
-          //   if (err) return console.log(err);
-          //   console.log('done did it all');
-          // });
+async function post () {
+   //let randomquote = Quotes.randomQuote();
+   const configuration = new Configuration({
+   apiKey: process.env.API_KEY,
+});
+
+const openai = new OpenAIApi(configuration);
+const completion = await openai.createCompletion({
+  model: "text-davinci-002",
+  prompt:"tweet about Kashmir",
+  temperature: 0.29,
+  max_tokens: 64,
+  top_p: 1,
+  frequency_penalty: 0,
+  presence_penalty: 0,
+});
+console.log(completion.data)
+let quote = completion.data.choices[0].text;
+console.log(quote)
+
+client.post('statuses/update', {status: quote}, function(error, tweet, response) {
+  if (!error) {
+    //console.log(response);
+  } 
+  else {
+    console.log(error);
+           fs.appendFile('pt.txt', '\n'+JSON.stringify(error), function (err) {
+            if (err) return console.log(err);
+            console.log('done did it all');
+          });
        }
    });
   }
@@ -47,12 +62,12 @@ var client = new Twitter({
     console.log(query);
     channel = query;
   //console.log(channel, "CHANNEL");
- //until:'2021-07-10'
+  //until:'2021-07-10'
   client.get('search/tweets', {q: channel, result_type:'recent', count:runs}, function(error, tweets, response) { 
        for(let i=0;i<runs;i++){
     if (typeof tweets !== "undefined" && typeof tweets.statuses[i] !== "undefined"){
-    // tweetset.push(tweets.statuses[i].id_str);
-    // console.log(tweets)
+    //tweetset.push(tweets.statuses[i].id_str);
+    //console.log(tweets)
     twid.push(tweets.statuses[i].id);
     var tweetId = tweets.statuses[i].id_str;
   }
@@ -60,7 +75,7 @@ var client = new Twitter({
   //Like
 client.post('favorites/create', { id: tweetId }, function (error, tweet, response){
  if(!error){
-  console.log(response, 'LK');
+  //console.log(response, 'LK');
  }
   else {
     console.log(error, 'LK err');
@@ -70,7 +85,7 @@ client.post('favorites/create', { id: tweetId }, function (error, tweet, respons
    }
 })
  }
-//  console.log(twid, 'full list of array accessible here');
+//console.log(twid, 'full list of array accessible here');
 });
 });
 }
@@ -89,7 +104,7 @@ function retweet (queries) {
       var tweetId = tweets.statuses[i].id_str;
     }
 
-// Retweet
+//Retweet
 client.post('statuses/retweet/' + tweetId, function(error, tweet, response) {
   if (!error) {
     console.log(response, 'RT');
@@ -102,16 +117,14 @@ else{
   });
 }});
  }
-  //  console.log(twid, 'full list of array accessible here');
+  //console.log(twid, 'full list of array accessible here');
   });
  });
 }
 
-// post();
-like(queriesLK);
-retweet(queriesRT);
+//post();
+like(config.queriesLK);
+retweet(config.queriesRT);
 
-// cron-job
+//cron-job
 });
-
-
