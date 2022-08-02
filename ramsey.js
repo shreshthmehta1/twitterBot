@@ -6,7 +6,7 @@ const Quotes = require("randomquote-api");
 let fs = require('fs');
 
 //Schedule task
-cron.schedule('* */1 * * *', () => {
+cron.schedule('0 */2 * * *', () => {
 
 let tweetset = [];
 //Retrieved set of tweets
@@ -20,18 +20,16 @@ var client = new Twitter({
     access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY,
     access_token_secret: process.env.ACCESS_TOKEN_SECRET
     //bearer_token: process.env.TWITTER_BEARER_TOKEN,
-  });
+});
 
-async function post () {
-   //let randomquote = Quotes.randomQuote();
+async function post (queries) {
    const configuration = new Configuration({
    apiKey: process.env.API_KEY,
 });
-
 const openai = new OpenAIApi(configuration);
 const completion = await openai.createCompletion({
   model: "text-davinci-002",
-  prompt:"tweet about ",
+  prompt:queries,
   temperature: 0.29,
   max_tokens: 64,
   top_p: 1,
@@ -41,7 +39,6 @@ const completion = await openai.createCompletion({
 console.log(completion.data)
 let quote = completion.data.choices[0].text;
 console.log(quote)
-
 client.post('statuses/update', {status: quote}, function(error, tweet, response) {
   if (!error) {
     //console.log(response);
@@ -54,11 +51,11 @@ client.post('statuses/update', {status: quote}, function(error, tweet, response)
           });
        }
    });
+//EOPS
   }
 
-  function like (queries) {
+function like (queries) {
   queries.forEach(query => {
-   
     console.log(query);
     channel = query;
   //console.log(channel, "CHANNEL");
@@ -67,12 +64,10 @@ client.post('statuses/update', {status: quote}, function(error, tweet, response)
        for(let i=0;i<runs;i++){
     if (typeof tweets !== "undefined" && typeof tweets.statuses[i] !== "undefined"){
     //tweetset.push(tweets.statuses[i].id_str);
-    //console.log(tweets)
+    console.log(tweets.statuses[i].user.screen_name)
     twid.push(tweets.statuses[i].id);
     var tweetId = tweets.statuses[i].id_str;
-  }
-  
-  //Like
+}
 client.post('favorites/create', { id: tweetId }, function (error, tweet, response){
  if(!error){
   //console.log(response, 'LK');
@@ -86,13 +81,13 @@ client.post('favorites/create', { id: tweetId }, function (error, tweet, respons
 })
  }
 //console.log(twid, 'full list of array accessible here');
+  });
 });
-});
+//EOLK
 }
 
 function retweet (queries) {
   queries.forEach(query => {
-     
       console.log(query);
       channel = query;
     //console.log(channel, "CHANNEL");
@@ -103,15 +98,12 @@ function retweet (queries) {
       twid.push(tweets.statuses[i].id);
       var tweetId = tweets.statuses[i].id_str;
     }
-
-//Retweet
 client.post('statuses/retweet/' + tweetId, function(error, tweet, response) {
   if (!error) {
     console.log(response, 'RT');
   }
-else{
+else {
   console.log(error, 'RT err');
-  //log
   fs.appendFile('rt.txt', '\n'+JSON.stringify(error), function (err) {
     if (err) return console.log(err);
   });
@@ -120,11 +112,12 @@ else{
   //console.log(twid, 'full list of array accessible here');
   });
  });
+//EORT
 }
 
-post();
+post(config.queriesPS);
 like(config.queriesLK);
 retweet(config.queriesRT);
 
-//cron-job
+// cron-job
 });
