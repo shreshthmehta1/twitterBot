@@ -3,12 +3,14 @@ var Twitter = require('twitter');
 let config = require('./config.js');
 var cron = require('node-cron');
 const Quotes = require("randomquote-api");
+const readline = require('readline');
 let fs = require('fs');
+const { ConsoleMessage } = require("puppeteer");
 
-//Schedule task
-cron.schedule('0 */2 * * *', () => {
+// Schedule task
+cron.schedule('0 */1 * * *', () => {
 
-let tweetset = [];
+var tweetset = [];
 //Retrieved set of tweets
 var twid = [];
 let runs = 10;
@@ -22,21 +24,39 @@ var client = new Twitter({
     //bearer_token: process.env.TWITTER_BEARER_TOKEN,
 });
 
-async function post (queries) {
-   const configuration = new Configuration({
+const configuration = new Configuration({
    apiKey: process.env.API_KEY,
 });
 const openai = new OpenAIApi(configuration);
+
+function fetch (){
+fs.readFile('prompts.js', 'utf8', function(err, data)
+{
+    if (err)
+    {
+        // check and handle err
+    }
+    // console.log(data);
+    let firstline = data.split('\r\n')[0];
+    channel = firstline;
+    console.log(channel, 'channel');
+    let linesExceptFirst = data.split('\n').slice(1).join('\n');
+    fs.writeFile('prompts.js', linesExceptFirst, function(err, data) { if (err) {/** check and handle err */} });
+    tweet(channel);
+});
+}
+
+async function tweet (query) {
+console.log(tweetset, 'tweetset');
 const completion = await openai.createCompletion({
   model: "text-davinci-002",
-  prompt:queries,
+  prompt:query,
   temperature: 0.29,
   max_tokens: 64,
   top_p: 1,
   frequency_penalty: 0,
   presence_penalty: 0,
 });
-console.log(completion.data)
 let quote = completion.data.choices[0].text;
 console.log(quote)
 client.post('statuses/update', {status: quote}, function(error, tweet, response) {
@@ -51,8 +71,8 @@ client.post('statuses/update', {status: quote}, function(error, tweet, response)
           });
        }
    });
-//EOPS
-  }
+// EOPS
+}
 
 function like (queries) {
   queries.forEach(query => {
@@ -64,7 +84,7 @@ function like (queries) {
        for(let i=0;i<runs;i++){
     if (typeof tweets !== "undefined" && typeof tweets.statuses[i] !== "undefined"){
     //tweetset.push(tweets.statuses[i].id_str);
-    console.log(tweets.statuses[i].user.screen_name)
+    // console.log(tweets.statuses[i].user.screen_name)
     twid.push(tweets.statuses[i].id);
     var tweetId = tweets.statuses[i].id_str;
 }
@@ -100,7 +120,7 @@ function retweet (queries) {
     }
 client.post('statuses/retweet/' + tweetId, function(error, tweet, response) {
   if (!error) {
-    console.log(response, 'RT');
+    // console.log(response, 'RT');
   }
 else {
   console.log(error, 'RT err');
@@ -115,7 +135,8 @@ else {
 //EORT
 }
 
-post(config.queriesPS);
+// fetch()
+// tweet();
 like(config.queriesLK);
 retweet(config.queriesRT);
 
