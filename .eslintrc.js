@@ -11,6 +11,7 @@ module.exports = {
   rules: {
     "eqeqeq": "off",
     "curly": "error",
+    "brace-style":[2, "allman"],
     "quotes": ["error", "double"],
     "linebreak-style": 1
   },
