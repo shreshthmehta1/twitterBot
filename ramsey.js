@@ -1,4 +1,3 @@
-// const { Configuration, OpenAIApi } = require("openai");
 const Twitter = require("twitter");
 const config = require("./config.js");
 const cron = require("node-cron");
