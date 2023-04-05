@@ -1,11 +1,11 @@
 // const { Configuration, OpenAIApi } = require("openai");
-const Twitter = require('twitter');
-const config = require('./config.js');
-const cron = require('node-cron');
-const fs = require('fs');
+const Twitter = require("twitter");
+const config = require("./config.js");
+const cron = require("node-cron");
+const fs = require("fs");
 
 //Schedule task
-cron.schedule('0 */1 * * *', () => {
+cron.schedule("0 */1 * * *", () => {
 
 //var tweetset = [];
 //Retrieved set of tweets
@@ -27,7 +27,7 @@ function like (queries) {
     channel = query;
   //console.log(channel, "CHANNEL");
   //until:'2021-07-10'
-  client.get('search/tweets', {q: channel, result_type:'recent', count:runs}, function(error, tweets) { 
+  client.get("search/tweets", {q: channel, result_type:"recent", count:runs}, function(error, tweets) { 
        for(let i=0;i<runs;i++){
     if (typeof tweets !== "undefined" && typeof tweets.statuses[i] !== "undefined"){
     //tweetset.push(tweets.statuses[i].id_str);
@@ -35,14 +35,14 @@ function like (queries) {
     twid.push(tweets.statuses[i].id);
     var tweetId = tweets.statuses[i].id_str;
 }
-client.post('favorites/create', { id: tweetId }, function (error, tweet, response){
+client.post("favorites/create", { id: tweetId }, function (error, tweet, response){
  if(!error){
-  console.log(response,tweet, 'LK');
+  console.log(response,tweet, "LK");
  }
   else {
-    console.log(error, 'LK err');
-    fs.appendFile('lk.txt', '\n'+JSON.stringify(error), function (err) {
-      if (err) return console.log(err);
+    console.log(error, "LK err");
+    fs.appendFile("lk.txt", "\n"+JSON.stringify(error), function (err) {
+      if (err) {return console.log(err);}
     });
    }
 })
@@ -59,20 +59,20 @@ function retweet (queries) {
       channel = query;
     //console.log(channel, "CHANNEL");
    //until:'2021-07-10'
-    client.get('search/tweets', {q: channel, result_type:'recent', count:runs}, function(error, tweets) { 
+    client.get("search/tweets", {q: channel, result_type:"recent", count:runs}, function(error, tweets) { 
          for(let i=0;i<runs;i++){
       if (typeof tweets !== "undefined" && typeof tweets.statuses[i] !== "undefined"){
       twid.push(tweets.statuses[i].id);
       var tweetId = tweets.statuses[i].id_str;
     }
-client.post('statuses/retweet/' + tweetId, function(error) {
+client.post("statuses/retweet/" + tweetId, function(error) {
   if (!error) {
     //console.log(response, 'RT');
   }
 else {
-  console.log(error, 'RT err');
-  fs.appendFile('rt.txt', '\n'+JSON.stringify(error), function (err) {
-    if (err) return console.log(err);
+  console.log(error, "RT err");
+  fs.appendFile("rt.txt", "\n"+JSON.stringify(error), function (err) {
+    if (err) {return console.log(err);}
   });
 }});
  }
