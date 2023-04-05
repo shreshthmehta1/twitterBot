@@ -5,7 +5,8 @@ const cron = require("node-cron");
 const fs = require("fs");
 
 //Schedule task
-cron.schedule("0 */1 * * *", () => {
+cron.schedule("0 */1 * * *", () => 
+{
 
 //var tweetset = [];
 //Retrieved set of tweets
@@ -21,28 +22,40 @@ var client = new Twitter({
     //bearer_token: process.env.TWITTER_BEARER_TOKEN,
 });
 
-function like (queries) {
-  queries.forEach(query => {
+function like (queries) 
+{
+  queries.forEach(query => 
+{
     console.log(query);
     channel = query;
   //console.log(channel, "CHANNEL");
   //until:'2021-07-10'
-  client.get("search/tweets", {q: channel, result_type:"recent", count:runs}, function(error, tweets) { 
-       for(let i=0;i<runs;i++){
-    if (typeof tweets !== "undefined" && typeof tweets.statuses[i] !== "undefined"){
+  client.get("search/tweets", {q: channel, result_type:"recent", count:runs}, function(error, tweets) 
+{ 
+       for(let i=0;i<runs;i++)
+{
+    if (typeof tweets !== "undefined" && typeof tweets.statuses[i] !== "undefined")
+{
     //tweetset.push(tweets.statuses[i].id_str);
     //console.log(tweets.statuses[i].user.screen_name)
     twid.push(tweets.statuses[i].id);
     var tweetId = tweets.statuses[i].id_str;
 }
-client.post("favorites/create", { id: tweetId }, function (error, tweet, response){
- if(!error){
+client.post("favorites/create", { id: tweetId }, function (error, tweet, response)
+{
+ if(!error)
+{
   console.log(response,tweet, "LK");
  }
-  else {
+  else 
+{
     console.log(error, "LK err");
-    fs.appendFile("lk.txt", "\n"+JSON.stringify(error), function (err) {
-      if (err) {return console.log(err);}
+    fs.appendFile("lk.txt", "\n"+JSON.stringify(error), function (err) 
+{
+      if (err) 
+{
+return console.log(err);
+}
     });
    }
 })
@@ -53,28 +66,41 @@ client.post("favorites/create", { id: tweetId }, function (error, tweet, respons
 //EOLK
 }
 
-function retweet (queries) {
-  queries.forEach(query => {
+function retweet (queries) 
+{
+  queries.forEach(query => 
+{
       console.log(query);
       channel = query;
     //console.log(channel, "CHANNEL");
    //until:'2021-07-10'
-    client.get("search/tweets", {q: channel, result_type:"recent", count:runs}, function(error, tweets) { 
-         for(let i=0;i<runs;i++){
-      if (typeof tweets !== "undefined" && typeof tweets.statuses[i] !== "undefined"){
+    client.get("search/tweets", {q: channel, result_type:"recent", count:runs}, function(error, tweets) 
+{ 
+         for(let i=0;i<runs;i++)
+{
+      if (typeof tweets !== "undefined" && typeof tweets.statuses[i] !== "undefined")
+{
       twid.push(tweets.statuses[i].id);
       var tweetId = tweets.statuses[i].id_str;
     }
-client.post("statuses/retweet/" + tweetId, function(error) {
-  if (!error) {
+client.post("statuses/retweet/" + tweetId, function(error) 
+{
+  if (!error) 
+{
     //console.log(response, 'RT');
   }
-else {
+else 
+{
   console.log(error, "RT err");
-  fs.appendFile("rt.txt", "\n"+JSON.stringify(error), function (err) {
-    if (err) {return console.log(err);}
+  fs.appendFile("rt.txt", "\n"+JSON.stringify(error), function (err) 
+{
+    if (err) 
+{
+return console.log(err);
+}
   });
-}});
+}
+});
  }
   //console.log(twid, 'full list of array accessible here');
   });
