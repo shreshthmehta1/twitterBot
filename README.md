@@ -1,3 +1,3 @@
-#Experiments
+# Experiments
 # with
-# twitter API & openai    
+# twitter & openai    
