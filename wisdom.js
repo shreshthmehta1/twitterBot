@@ -24,7 +24,7 @@ var client = new Twitter({
 
 const completion = openai.createChatCompletion({
   model: "gpt-3.5-turbo",
-  messages:[{ role: "user", content: "tweet about how good rob holding is" }],
+  messages:[{ role: "user", content: "tweet about how smart devices & wildlife" }],
   // temperature: 0.5,
   // max_tokens: 100,
   // top_p: 1,
@@ -33,7 +33,9 @@ const completion = openai.createChatCompletion({
   });
   
   let k = Promise.resolve(completion);
-  k.then(value => {console.log(value.data.choices[0].message.content);
+  k.then(value => 
+{
+console.log(value.data.choices[0].message.content);
   tweet(value.data.choices[0].message.content);
   });
   
