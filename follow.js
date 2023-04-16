@@ -9,7 +9,7 @@ cron.schedule("0 */1 * * *", () =>
 
 //Retrieved set of tweets
 var twid = [];
-let runs = 2;
+let runs = 1;
 let channel;
 
 var client = new Twitter({
@@ -64,8 +64,7 @@ return console.log(err);
 //EOLK
 }
 
-
-follow(config.queriesLK);
+follow(config.queriesPS);
 
 // cron-job
 });
