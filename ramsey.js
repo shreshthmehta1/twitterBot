@@ -7,10 +7,9 @@ const fs = require("fs");
 cron.schedule("0 */1 * * *", () => 
 {
 
-//var tweetset = [];
 //Retrieved set of tweets
 var twid = [];
-let runs = 10;
+let runs = 5;
 let channel;
 
 var client = new Twitter({
@@ -107,7 +106,6 @@ return console.log(err);
 //EORT
 }
 
-// fetch()
 like(config.queriesLK);
 retweet(config.queriesRT);
 
